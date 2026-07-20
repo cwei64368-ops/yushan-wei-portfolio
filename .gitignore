@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env*
+!.env.example
+public/assets/the-cube.mp4
+.git-exec/
+.sites-stage*/
+site-deploy*.tar.gz
+public/assets/profolio2.pdf
+public/assets/NGV_Portfolio_YushanWei.pdf

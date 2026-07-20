@@ -1,0 +1,156 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Pixelify+Sans:wght@400..700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Silkscreen:wght@400;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #ffffff;
+  color: #000000;
+  font-family: "Kanit", sans-serif;
+}
+
+body {
+  overflow-x: clip;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-heading {
+  background: none;
+  -webkit-text-fill-color: #000000;
+}
+
+.main-wrapper {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: #ffffff;
+}
+
+.grain {
+  display: none;
+}
+
+.project-image {
+  filter: saturate(0.92) contrast(1.03);
+}
+
+/* Monochrome editorial theme: keep every existing layout, but unify the site surface and typography. */
+.main-wrapper,
+.main-wrapper *:not(svg):not(path) {
+  font-family: "Kanit", sans-serif !important;
+}
+
+.main-wrapper,
+.main-wrapper section,
+.main-wrapper article,
+.main-wrapper [class~="bg-ink"],
+.main-wrapper [class~="bg-black"],
+.main-wrapper [class~="bg-acid"],
+.main-wrapper [class*="bg-ink"],
+.main-wrapper [class*="bg-black"],
+.main-wrapper [class*="bg-acid"],
+.main-wrapper [class*="bg-[#1d1c18]"],
+.main-wrapper [class*="bg-[#f8f7f2]"],
+.main-wrapper [class~="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+.main-wrapper,
+.main-wrapper h1,
+.main-wrapper h2,
+.main-wrapper h3,
+.main-wrapper h4,
+.main-wrapper p,
+.main-wrapper span,
+.main-wrapper li,
+.main-wrapper a,
+.main-wrapper button,
+.main-wrapper label {
+  color: #000000 !important;
+}
+
+.main-wrapper [class*="border-mist"] {
+  border-color: rgba(0, 0, 0, 0.22) !important;
+}
+
+#contact::before {
+  display: none !important;
+}
+
+.pdf-carousel {
+  clip-path: inset(0 round 28px);
+}
+
+@media (min-width: 640px) {
+  .pdf-carousel {
+    clip-path: inset(0 round 40px);
+  }
+}
+
+@media (min-width: 768px) {
+  .pdf-carousel {
+    clip-path: inset(0 round 50px);
+  }
+}
+
+/* Keep the scattered hero collision-free on very wide, short screens. */
+@media (min-width: 1024px) and (min-aspect-ratio: 16 / 9) {
+  [data-hero-project="0"] {
+    left: 2% !important;
+    top: 48% !important;
+    bottom: auto !important;
+    width: min(29vw, 48vh) !important;
+  }
+
+  [data-hero-project="1"] {
+    left: 47% !important;
+    top: 18% !important;
+    bottom: auto !important;
+    width: min(22vw, 42vh) !important;
+  }
+
+  [data-hero-project="2"] {
+    left: 34% !important;
+    top: auto !important;
+    bottom: 2% !important;
+    width: min(17vw, 32vh) !important;
+  }
+
+  [data-hero-project="3"] {
+    right: 4% !important;
+    top: 31% !important;
+    bottom: auto !important;
+    width: min(18vw, 40vh) !important;
+  }
+
+  [data-hero-project="4"] {
+    left: auto !important;
+    right: 7% !important;
+    top: auto !important;
+    bottom: 0 !important;
+    width: min(13vw, 24vh) !important;
+  }
+
+  [data-hero-project="5"] {
+    left: 62% !important;
+    top: auto !important;
+    bottom: 0 !important;
+    width: min(11vw, 24vh) !important;
+  }
+}
