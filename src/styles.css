@@ -120,9 +120,9 @@ a {
 
   [data-hero-project="1"] {
     left: 47% !important;
-    top: 18% !important;
+    top: 12% !important;
     bottom: auto !important;
-    width: min(22vw, 42vh) !important;
+    width: min(19.5vw, 37vh) !important;
   }
 
   [data-hero-project="2"] {
@@ -134,9 +134,9 @@ a {
 
   [data-hero-project="3"] {
     right: 4% !important;
-    top: 31% !important;
+    top: 25% !important;
     bottom: auto !important;
-    width: min(18vw, 40vh) !important;
+    width: min(16vw, 35vh) !important;
   }
 
   [data-hero-project="4"] {
