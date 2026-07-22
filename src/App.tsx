@@ -961,6 +961,7 @@ const heroCompactLayouts = [
 ];
 
 function HeroSection() {
+  const { language, setLanguage } = useLanguage();
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
   return (
@@ -972,23 +973,39 @@ function HeroSection() {
             <span className="block italic">(Angie) Wei</span>
           </h1>
           <p className="mt-5 max-w-[430px] text-sm font-medium leading-tight sm:text-base md:text-lg">
-            Design innovation, AIGC, interactive experiences, and visual storytelling.
+            {localize(
+              language,
+              "Design innovation, AIGC, interactive experiences, and visual storytelling.",
+              "设计创新、AIGC、互动体验与视觉叙事。",
+            )}
           </p>
         </FadeIn>
 
         <FadeIn delay={0} y={-16} className="absolute right-0 top-5 z-40 sm:top-7">
           <nav className="flex flex-col items-end gap-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs md:flex-row md:gap-6 md:text-sm lg:gap-10">
             {[
-              { label: "About", href: "#about" },
-              { label: "Capabilities", href: "#capabilities" },
-              { label: "Work", href: "#work-experience" },
-              { label: "Projects", href: "#projects" },
-              { label: "Contact", href: "#contact" },
+              { label: localize(language, "About", "关于我"), href: "#about" },
+              { label: localize(language, "Capabilities", "专业技能"), href: "#capabilities" },
+              { label: localize(language, "Work", "工作经历"), href: "#work-experience" },
+              { label: localize(language, "Projects", "项目作品"), href: "#projects" },
+              { label: localize(language, "Contact", "联系方式"), href: "#contact" },
             ].map((item) => (
               <a key={item.label} href={item.href} className="transition hover:opacity-45">
                 {item.label}
               </a>
             ))}
+            <label className="relative cursor-pointer transition hover:opacity-45">
+              <span>{localize(language, "Language", "语言")}</span>
+              <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as Language)}
+                aria-label={localize(language, "Language", "语言")}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              >
+                <option value="en">English</option>
+                <option value="zh">中文</option>
+              </select>
+            </label>
           </nav>
         </FadeIn>
 
@@ -1024,7 +1041,7 @@ function HeroSection() {
                 {index === 5 && (
                   <div className="mb-2 flex items-baseline justify-between gap-2">
                     <span className="text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs">
-                      {heroProjectTypes[index]}
+                      {language === "zh" ? project.categoryZh : heroProjectTypes[index]}
                     </span>
                     <span className="text-[0.6rem] font-medium tabular-nums opacity-45 sm:text-[0.7rem]">
                       0{index + 1}
@@ -1041,7 +1058,7 @@ function HeroSection() {
                 {index !== 5 && (
                   <div className="mt-2 flex items-baseline justify-between gap-2">
                     <span className="text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs">
-                      {heroProjectTypes[index]}
+                      {language === "zh" ? project.categoryZh : heroProjectTypes[index]}
                     </span>
                     <span className="text-[0.6rem] font-medium tabular-nums opacity-45 sm:text-[0.7rem]">
                       0{index + 1}
@@ -1736,11 +1753,25 @@ function ContactSection() {
 }
 
 export default function App() {
-  const language: Language = "en";
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window === "undefined") return "en";
+
+    const savedLanguage = window.localStorage.getItem("portfolio-language");
+    if (savedLanguage === "en" || savedLanguage === "zh") {
+      return savedLanguage;
+    }
+
+    return window.navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem("portfolio-language", language);
+    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+  }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: () => undefined }}>
-      <main className="main-wrapper" lang="en">
+    <LanguageContext.Provider value={{ language, setLanguage }}>
+      <main className="main-wrapper" lang={language === "zh" ? "zh-CN" : "en"}>
         <div className="grain" />
         <HeroSection />
         <AboutSection />
