@@ -1168,7 +1168,7 @@ function AboutSectionLegacy() {
       <div className="relative z-20 flex -translate-y-20 flex-col items-center gap-8 sm:-translate-y-24 sm:gap-10 md:-translate-y-36 md:gap-12 lg:-translate-y-40">
         <FadeIn y={40}>
           <h2 className="text-center font-serif text-[clamp(3rem,12vw,160px)] italic leading-none tracking-[-0.05em] text-ink">
-            {localize(language, "About Me", "关于我")}
+            About Me
           </h2>
         </FadeIn>
         <AnimatedText
@@ -1200,7 +1200,7 @@ function AboutSection() {
       <div className="mx-auto max-w-[1600px]">
         <FadeIn y={36}>
           <h2 className="font-serif text-[clamp(4.4rem,14vw,200px)] italic leading-[0.78] tracking-[-0.065em]">
-            {localize(language, "About Me", "关于我")}
+            About Me
           </h2>
         </FadeIn>
 
@@ -1292,7 +1292,7 @@ function SkillsSection() {
             {localize(language, "Skills from resume", "简历技能")}
           </p>
           <h2 className="mt-4 text-center font-serif text-[clamp(3.2rem,11vw,150px)] italic leading-none tracking-[-0.06em] text-ink">
-            {localize(language, "Capabilities", "专业技能")}
+            Capabilities
           </h2>
         </FadeIn>
 
@@ -1304,7 +1304,13 @@ function SkillsSection() {
                   {skill.number}
                 </div>
                 <div className="flex h-full flex-col justify-end">
-                  <h3 className="max-w-[12rem] font-serif text-[clamp(1.75rem,3.3vw,3.15rem)] leading-[0.95] tracking-[-0.04em]">
+                  <h3
+                    className={`font-serif leading-[0.95] tracking-[-0.04em] ${
+                      language === "zh"
+                        ? "max-w-none whitespace-nowrap text-[clamp(1.8rem,7vw,3.15rem)] sm:text-[clamp(1.8rem,4vw,3.15rem)] lg:text-[clamp(1.75rem,3vw,3.15rem)]"
+                        : "max-w-[12rem] text-[clamp(1.75rem,3.3vw,3.15rem)]"
+                    }`}
+                  >
                     {language === "zh" ? skillNamesZh[index] : skill.name}
                   </h3>
                   <p className="mt-5 text-[clamp(0.95rem,1.4vw,1.15rem)] font-light leading-relaxed text-ink/66">
