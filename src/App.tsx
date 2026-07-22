@@ -468,7 +468,7 @@ const projects = [
       "/assets/cover_dating.webp",
       "/assets/cover_dating.webp",
     ],
-    videoSrc: "https://www.youtube.com/embed/2PqY-XggiM0?rel=0",
+    videoSrc: "/assets/the-cube.mp4",
   },
   {
     number: "08",

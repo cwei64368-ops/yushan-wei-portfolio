@@ -3,7 +3,6 @@ dist/
 *.tsbuildinfo
 .env*
 !.env.example
-public/assets/the-cube.mp4
 .git-exec/
 .sites-stage*/
 site-deploy*.tar.gz
