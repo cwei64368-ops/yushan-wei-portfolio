@@ -1190,6 +1190,8 @@ function AboutSectionLegacy() {
 }
 
 function AboutSection() {
+  const { language } = useLanguage();
+
   return (
     <section
       id="about"
@@ -1198,23 +1200,39 @@ function AboutSection() {
       <div className="mx-auto max-w-[1600px]">
         <FadeIn y={36}>
           <h2 className="font-serif text-[clamp(4.4rem,14vw,200px)] italic leading-[0.78] tracking-[-0.065em]">
-            About Me
+            {localize(language, "About Me", "关于我")}
           </h2>
         </FadeIn>
 
         <FadeIn y={28} delay={0.08}>
           <div className="mt-16 grid gap-8 border-t border-ink pt-5 text-sm leading-snug sm:mt-20 md:grid-cols-[0.6fr_0.9fr_2fr] md:gap-12 md:text-base lg:text-lg">
-            <p className="font-semibold uppercase tracking-[0.08em]">Bio</p>
-            <p className="font-semibold uppercase tracking-[0.08em]">Design · Culture · Technology</p>
+            <p className="font-semibold uppercase tracking-[0.08em]">
+              {localize(language, "Bio", "个人简介")}
+            </p>
+            <p className="font-semibold uppercase tracking-[0.08em]">
+              {localize(language, "Design · Culture · Technology", "设计 · 文化 · 科技")}
+            </p>
             <div className="max-w-3xl space-y-5 text-[clamp(1rem,1.55vw,1.35rem)] leading-[1.35]">
               <p>
-                A final-year Master of Interactive Design student at RMIT University, with a practice spanning AI-generated visual communication, exhibition production, and service design.
+                {localize(
+                  language,
+                  "A final-year Master of Interactive Design student at RMIT University, with a practice spanning AI-generated visual communication, exhibition production, and service design.",
+                  "我是 RMIT 大学交互设计硕士最后一年的学生，实践领域涵盖 AI 生成视觉传播、展览制作与服务设计。",
+                )}
               </p>
               <p>
-                Currently deepening expertise in AIGC workflows across cultural and creative institutional contexts, translating complex concepts into clear, communicative visual outcomes.
+                {localize(
+                  language,
+                  "Currently deepening expertise in AIGC workflows across cultural and creative institutional contexts, translating complex concepts into clear, communicative visual outcomes.",
+                  "目前，我正持续深化在文化与创意机构语境中的 AIGC 工作流程能力，将复杂概念转化为清晰、易于沟通的视觉成果。",
+                )}
               </p>
               <p>
-                I bring interdisciplinary design thinking and hands-on production capability to forward-looking creative teams.
+                {localize(
+                  language,
+                  "I bring interdisciplinary design thinking and hands-on production capability to forward-looking creative teams.",
+                  "我希望以跨学科设计思维与扎实的实践制作能力，为具有前瞻性的创意团队带来价值。",
+                )}
               </p>
             </div>
           </div>
