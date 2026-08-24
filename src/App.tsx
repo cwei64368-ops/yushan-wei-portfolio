@@ -301,17 +301,17 @@ const skillCapabilities = [
   },
   {
     number: "05",
-    name: "Interaction Design & 3D Modeling",
-    nameZh: "交互设计与\n3D模型",
-    tools: "TouchDesigner, Arduino, P5js, SketchUp, Rhino, Blender, CAD",
-    toolsZh: "TouchDesigner、Arduino、P5js、SketchUp、Rhino、Blender、CAD",
+    name: "Interaction Design",
+    nameZh: "交互设计",
+    tools: "TouchDesigner, Arduino, P5js",
+    toolsZh: "TouchDesigner、Arduino、P5js",
   },
   {
     number: "06",
-    name: "English",
-    nameZh: "英语",
-    tools: "IELTS 7.0, professional working proficiency",
-    toolsZh: "雅思7分，工作级熟练水平",
+    name: "3D Modeling",
+    nameZh: "3D模型",
+    tools: "SketchUp, Rhino, Blender, CAD",
+    toolsZh: "SketchUp、Rhino、Blender、CAD",
   },
 ];
 
