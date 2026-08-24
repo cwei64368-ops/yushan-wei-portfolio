@@ -273,44 +273,46 @@ const workExperiences = [
 const skillCapabilities = [
   {
     number: "01",
-    name: "AI Generation",
-    tools:
-      "Codex (ChatGPT), Claude Design, Nano Banana, Midjourney, Runway, Seedance",
+    name: "AI Content Generation",
+    nameZh: "AI内容生成",
+    tools: "Midjourney, Codex, Nano Banana, Claude Design",
+    toolsZh: "Midjourney、Codex、Nano Banana、Claude Design",
   },
   {
     number: "02",
-    name: "3D Modeling",
-    tools: "SketchUp, Rhino, Blender, CAD",
+    name: "Graphic Design",
+    nameZh: "平面设计",
+    tools: "Illustration, Photoshop, InDesign, Figma, Canva",
+    toolsZh: "Illustration、Photoshop、InDesign、Figma、Canva",
   },
   {
     number: "03",
     name: "Video Editing",
+    nameZh: "视频剪辑",
     tools: "CapCut Pro, Final Cut Pro, Premiere Pro, Clipchamp",
+    toolsZh: "CapCut Pro、Final Cut Pro、Premiere Pro、Clipchamp",
   },
   {
     number: "04",
-    name: "Interaction Design",
-    tools: "TouchDesigner, Arduino, P5js",
+    name: "AI-Assisted Development",
+    nameZh: "AI辅助开发",
+    tools: "Codex, Claude Code, Vercel Deployment",
+    toolsZh: "Codex、Claude Code、Vercel部署",
   },
   {
     number: "05",
-    name: "Data Visualization",
-    tools: "Flourish",
+    name: "Interaction Design & 3D Modeling",
+    nameZh: "交互设计与3D模型",
+    tools: "TouchDesigner, Arduino, P5js, SketchUp, Rhino, Blender, CAD",
+    toolsZh: "TouchDesigner、Arduino、P5js、SketchUp、Rhino、Blender、CAD",
   },
   {
     number: "06",
-    name: "Graphic Design",
-    tools: "Illustration, Photoshop, InDesign, Figma, Canva",
+    name: "English",
+    nameZh: "英语",
+    tools: "IELTS 7.0, professional working proficiency",
+    toolsZh: "雅思7分，工作级熟练水平",
   },
-];
-
-const skillNamesZh = [
-  "AI 生成",
-  "三维建模",
-  "视频剪辑",
-  "交互设计",
-  "数据可视化",
-  "平面设计",
 ];
 
 const workExperiencesZh = [
@@ -1311,10 +1313,10 @@ function SkillsSection() {
                         : "max-w-[12rem] text-[clamp(1.75rem,3.3vw,3.15rem)]"
                     }`}
                   >
-                    {language === "zh" ? skillNamesZh[index] : skill.name}
+                    {language === "zh" ? skill.nameZh : skill.name}
                   </h3>
                   <p className="mt-5 text-[clamp(0.95rem,1.4vw,1.15rem)] font-light leading-relaxed text-ink/66">
-                    {skill.tools}
+                    {language === "zh" ? skill.toolsZh : skill.tools}
                   </p>
                 </div>
               </article>
