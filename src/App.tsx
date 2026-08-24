@@ -302,7 +302,7 @@ const skillCapabilities = [
   {
     number: "05",
     name: "Interaction Design & 3D Modeling",
-    nameZh: "交互设计与3D模型",
+    nameZh: "交互设计与\n3D模型",
     tools: "TouchDesigner, Arduino, P5js, SketchUp, Rhino, Blender, CAD",
     toolsZh: "TouchDesigner、Arduino、P5js、SketchUp、Rhino、Blender、CAD",
   },
@@ -1309,7 +1309,7 @@ function SkillsSection() {
                   <h3
                     className={`font-serif leading-[0.95] tracking-[-0.04em] ${
                       language === "zh"
-                        ? "max-w-none whitespace-nowrap text-[clamp(1.8rem,7vw,3.15rem)] sm:text-[clamp(1.8rem,4vw,3.15rem)] lg:text-[clamp(1.75rem,3vw,3.15rem)]"
+                        ? "max-w-none whitespace-pre-line text-[clamp(1.8rem,7vw,3.15rem)] sm:text-[clamp(1.8rem,4vw,3.15rem)] lg:text-[clamp(1.75rem,3vw,3.15rem)]"
                         : "max-w-[12rem] text-[clamp(1.75rem,3.3vw,3.15rem)]"
                     }`}
                   >
