@@ -966,10 +966,67 @@ function HeroSection() {
   const { language, setLanguage } = useLanguage();
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
+  const layoutRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const layout = layoutRef.current;
+    if (!layout) return;
+    let frame = 0;
+    const measure = (element: HTMLElement) => {
+      let left = 0, top = 0;
+      let current: HTMLElement | null = element;
+      while (current && current !== layout) {
+        left += current.offsetLeft;
+        top += current.offsetTop;
+        current = current.offsetParent as HTMLElement | null;
+      }
+      return { element, left, top, width: element.offsetWidth, height: element.offsetHeight };
+    };
+    const clearOverlaps = () => {
+      const cards = Array.from(layout.querySelectorAll<HTMLElement>("[data-hero-project]"));
+      const intro = layout.querySelector<HTMLElement>(".hero-intro");
+      const navigation = layout.querySelector<HTMLElement>(".hero-navigation");
+      if (!intro || !navigation) return;
+      const elements = [intro, navigation, ...cards];
+      elements.forEach(element => element.style.removeProperty("translate"));
+      const placed: ReturnType<typeof measure>[] = [];
+      const ordered = [measure(intro), measure(navigation), ...cards.map(measure).sort((a, b) => a.top - b.top)];
+      ordered.forEach(rect => {
+        const originalTop = rect.top;
+        let moved = true;
+        while (moved) {
+          moved = false;
+          for (const previous of placed) {
+            // Include captions and leave clearance for the existing hover enlargement.
+            const gap = 24;
+            if (rect.left < previous.left + previous.width + gap &&
+                rect.left + rect.width + gap > previous.left &&
+                rect.top < previous.top + previous.height + gap &&
+                rect.top + rect.height + gap > previous.top) {
+              rect.top = previous.top + previous.height + gap;
+              moved = true;
+            }
+          }
+        }
+        if (rect.top > originalTop) rect.element.style.translate = "0 " + (rect.top - originalTop) + "px";
+        placed.push(rect);
+      });
+      // Extra space belongs to the section, so percentage-based original positions stay stable.
+      const overflow = Math.max(0, ...placed.map(rect => rect.top + rect.height - layout.offsetHeight));
+      (layout.parentElement as HTMLElement).style.paddingBottom = 40 + overflow + "px";
+    };
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(clearOverlaps); };
+    const observer = new ResizeObserver(schedule);
+    observer.observe(layout);
+    layout.querySelectorAll<HTMLElement>("[data-hero-project], .hero-intro, .hero-navigation").forEach(element => observer.observe(element));
+    schedule();
+    document.fonts.ready.then(schedule);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
+  }, []);
+
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white px-4 pb-10 text-black sm:px-6 md:px-8">
-      <div className="relative mx-auto min-h-[100svh] max-w-[1800px] pt-5 sm:pt-7">
-        <FadeIn delay={0.04} x={-24} y={0} className="relative z-30 max-w-[72%] lg:absolute lg:left-0 lg:top-6 lg:max-w-[43%]">
+    <section className="hero-section relative min-h-screen overflow-hidden bg-white px-4 pb-10 text-black sm:px-6 md:px-8">
+      <div ref={layoutRef} className="hero-layout relative mx-auto min-h-[100svh] max-w-[1800px] pt-5 sm:pt-7">
+        <FadeIn delay={0.04} x={-24} y={0} className="hero-intro relative z-30 max-w-[72%] lg:absolute lg:left-0 lg:top-6 lg:max-w-[43%]">
           <h1 className="text-[clamp(3.4rem,7.8vw,8.6rem)] font-black leading-[0.74] tracking-[-0.075em]">
             Yushan
             <span className="block italic">(Angie) Wei</span>
@@ -983,7 +1040,7 @@ function HeroSection() {
           </p>
         </FadeIn>
 
-        <FadeIn delay={0} y={-16} className="absolute right-0 top-5 z-40 sm:top-7">
+        <FadeIn delay={0} y={-16} className="hero-navigation absolute right-0 top-5 z-40 sm:top-7">
           <nav className="flex flex-col items-end gap-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs md:flex-row md:gap-6 md:text-sm lg:gap-10">
             {[
               { label: localize(language, "About", "关于我"), href: "#about" },
@@ -1012,7 +1069,7 @@ function HeroSection() {
         </FadeIn>
 
         <div
-          className="relative z-20 mt-20 flex flex-col pb-8 sm:mt-28 lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-0 lg:mt-0 lg:block lg:pb-0"
+          className="hero-projects relative z-20 mt-20 flex flex-col pb-8 sm:mt-28 lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-0 lg:mt-0 lg:block lg:pb-0"
           onMouseLeave={() => setHoveredProject(null)}
         >
           {projects.slice(0, 6).map((project, index) => {
@@ -1025,7 +1082,7 @@ function HeroSection() {
                 href={`#project-${index}`}
                 data-hero-project={index}
                 aria-label={`View ${project.name}`}
-                className={`group relative block min-w-0 origin-center lg:absolute lg:m-0 lg:self-auto ${heroCompactLayouts[index]} ${heroScatterLayouts[index]}`}
+                className={`hero-project group relative block min-w-0 origin-center lg:absolute lg:m-0 lg:self-auto ${heroCompactLayouts[index]} ${heroScatterLayouts[index]}`}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.1 }}
