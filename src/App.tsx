@@ -383,6 +383,18 @@ const projects = [
   },
   {
     number: "03",
+    name: "ai photo body",
+    category: "AI-Assisted Photography",
+    categoryZh: "AI 辅助拍照产品",
+    cover: "/assets/paida-pages/page-1.webp",
+    bubbleCover: "/assets/paida-pages/page-1.webp",
+    pdfHref: "/assets/Paida_Product_Brief_EN.pptx",
+    description: "An AI-assisted photography product designed for a Xiaohongshu (RedNote) assessment.",
+    descriptionZh: "为小红书测试设计的 AI 辅助拍照产品。",
+    images: ["/assets/paida-pages/page-1.webp", "/assets/paida-pages/page-4.webp", "/assets/paida-pages/page-6.webp"],
+  },
+  {
+    number: "04",
     name: "Fragmented Feast",
     category: "Social Design",
     categoryZh: "社会设计",
@@ -400,7 +412,7 @@ const projects = [
     ],
   },
   {
-    number: "04",
+    number: "05",
     name: "Quiet Access",
     category: "Service Design",
     categoryZh: "服务设计",
@@ -418,7 +430,7 @@ const projects = [
     ],
   },
   {
-    number: "05",
+    number: "06",
     name: "When Finch Songs Are Sealed",
     category: "Data Installation",
     categoryZh: "数据装置",
@@ -436,7 +448,7 @@ const projects = [
     ],
   },
   {
-    number: "06",
+    number: "07",
     name: "Dating Corner Space Design",
     category: "Public Space",
     categoryZh: "公共空间设计",
@@ -454,7 +466,7 @@ const projects = [
     ],
   },
   {
-    number: "07",
+    number: "08",
     name: "The Cube",
     category: "Digital Media Art",
     categoryZh: "数字媒体艺术",
@@ -473,7 +485,7 @@ const projects = [
     videoSrc: "/assets/the-cube.mp4",
   },
   {
-    number: "08",
+    number: "09",
     name: "Black Dress",
     category: "Photography",
     categoryZh: "摄影",
@@ -853,6 +865,7 @@ function HeroSectionLegacy() {
 const heroProjectTypes = [
   "AI Companion Product",
   "AIGC",
+  "AI Photo Product",
   "Curatorial Design",
   "User Experience",
   "Data",
@@ -1111,7 +1124,7 @@ function HeroSection() {
                   <img
                     src={project.bubbleCover}
                     alt={project.name}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+                    className={`h-full w-full transition duration-500 group-hover:scale-[1.035] ${project.name === "ai photo body" ? "object-contain bg-[#ff2040]" : "object-cover"}`}
                   />
                 </div>
                 {index !== 5 && (
@@ -1445,10 +1458,12 @@ function WorkExperienceSection() {
 function PdfPageCarousel({
   pages,
   title,
+  presentation = false,
   videoLink,
 }: {
   pages: string[];
   title: string;
+  presentation?: boolean;
   videoLink?: {
     pageIndex: number;
     url: string;
@@ -1485,7 +1500,7 @@ function PdfPageCarousel({
     <div className="pdf-carousel isolate overflow-hidden rounded-[28px] border border-mist/25 bg-black sm:rounded-[40px] md:rounded-[50px]">
       <div className="flex items-center justify-between gap-3 border-b border-mist/15 px-4 py-3 sm:px-6">
         <p className="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-mist/60 sm:text-xs">
-          {localize(language, "Swipe or scroll through the PDF", "滑动或滚动浏览 PDF")}
+          {localize(language, presentation ? "Swipe or scroll through the presentation" : "Swipe or scroll through the PDF", presentation ? "滑动或滚动浏览项目介绍" : "滑动或滚动浏览 PDF")}
         </p>
         <div className="flex shrink-0 items-center gap-2">
           <span className="min-w-12 text-center text-xs font-medium tabular-nums text-mist/70 sm:text-sm">
@@ -1559,20 +1574,16 @@ function ProjectCard({
   const isYouTubeVideo = Boolean(videoSrc?.includes("youtube.com/embed/"));
   const photoSrc = "photoSrc" in project ? (project.photoSrc as string) : null;
   const isPhotoProject = Boolean(photoSrc);
-  const embeddedPdfPages =
-    index === 0
-      ? moodpetPdfPages
-      : index === 1
-        ? ngvPdfPages
-        : index === 2
-          ? fragmentedPdfPages
-          : index === 3
-            ? quietAccessPdfPages
-            : index === 4
-              ? finchPdfPages
-              : index === 5
-                ? datingCornerPdfPages
-                : null;
+  const projectPages: Record<string, string[]> = {
+    "MoodPet / MOSS": moodpetPdfPages,
+    "It's 2100: Welcome to the Symbiocene": ngvPdfPages,
+    "ai photo body": Array.from({ length: 10 }, (_, page) => "/assets/paida-pages/page-" + (page + 1) + ".webp"),
+    "Fragmented Feast": fragmentedPdfPages,
+    "Quiet Access": quietAccessPdfPages,
+    "When Finch Songs Are Sealed": finchPdfPages,
+    "Dating Corner Space Design": datingCornerPdfPages,
+  };
+  const embeddedPdfPages = projectPages[project.name] ?? null;
 
   return (
     <div
@@ -1654,6 +1665,7 @@ function ProjectCard({
           <PdfPageCarousel
             pages={embeddedPdfPages}
             title={project.name}
+            presentation={project.name === "ai photo body"}
             videoLink={
               index === 0
                 ? {
@@ -1661,7 +1673,7 @@ function ProjectCard({
                     url: "https://youtu.be/2EBWyT_SLFQ?si=baDkPPWL95mSi3Q2",
                     placement: "page-left-bottom",
                   }
-                : index === 3
+                : project.name === "Quiet Access"
                 ? {
                     pageIndex: 10,
                     url: "https://www.youtube.com/watch?v=2e9GgUsxak4",
@@ -1710,15 +1722,13 @@ function ProjectsSection() {
         </h2>
       </FadeIn>
       <div className="mx-auto max-w-7xl">
-        {projects.slice(0, 6).map((project, index) => (
+        {projects.map((project, index) => (
           <ProjectCard
             key={project.name}
             project={project}
             index={index}
           />
         ))}
-        <ProjectCard project={projects[6]} index={6} />
-        <ProjectCard project={projects[7]} index={7} />
       </div>
     </section>
   );
