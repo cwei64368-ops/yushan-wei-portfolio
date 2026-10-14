@@ -387,7 +387,7 @@ const projects = [
     category: "AI-Assisted Photography",
     categoryZh: "AI 辅助拍照产品",
     cover: "/assets/paida-pages/page-1.webp",
-    bubbleCover: "/assets/paida-pages/page-1.webp",
+    bubbleCover: "/assets/paida-live-cover.png",
     pdfHref: "/assets/Paida_Product_Brief_EN.pptx",
     description: "An AI-assisted photography product designed for a Xiaohongshu (RedNote) assessment.",
     descriptionZh: "为小红书测试设计的 AI 辅助拍照产品。",

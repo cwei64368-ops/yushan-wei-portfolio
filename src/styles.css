@@ -154,3 +154,18 @@ a {
     width: min(11vw, 24vh) !important;
   }
 }
+
+/* Keep the longer English navigation inside the same header area as Chinese. */
+@media (min-width: 1024px) {
+  .main-wrapper[lang="en"] .hero-navigation {
+    width: calc(57% - 32px);
+  }
+  .main-wrapper[lang="en"] .hero-navigation nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    column-gap: clamp(12px, 1.8vw, 32px);
+    row-gap: 12px;
+    font-size: clamp(10px, 0.8vw, 14px);
+    letter-spacing: 0.1em;
+  }
+}
