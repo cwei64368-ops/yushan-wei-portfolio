@@ -1804,7 +1804,7 @@ function ContactSection() {
       <img
         src="/assets/contact-yushan.jpg"
         alt="Portrait of Yushan Wei"
-        className="hidden"
+        className="absolute left-[46%] top-[26%] hidden h-[74%] w-[36%] object-cover object-top md:block"
       />
 
       <FadeIn className="relative z-10 flex min-h-screen w-full flex-col px-5 py-10 sm:px-8 sm:py-14 md:px-10">
@@ -1845,7 +1845,7 @@ function ContactSection() {
         <img
           src="/assets/contact-yushan.jpg"
           alt="Portrait of Yushan Wei"
-          className="mx-auto mt-12 aspect-[3/4] w-[82%] max-w-[680px] object-cover object-top sm:w-[68%] md:ml-[40%] md:w-[42%]"
+          className="mx-auto mt-12 aspect-[3/4] w-[82%] object-cover object-top sm:w-[68%] md:hidden"
         />
 
         <p className="mt-auto pt-16 text-left text-xs font-semibold uppercase tracking-[0.18em] sm:text-sm">

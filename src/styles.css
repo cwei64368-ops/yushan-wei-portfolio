@@ -269,10 +269,10 @@ a {
 .rotating-hero .fan-rotor { top:55%; }
 
 /* Responsive sizing shared by both languages and all screen aspect ratios. */
-.main-wrapper section { min-width:0; }
-.main-wrapper :is(article,figure,[class*="grid"] > *) { min-width:0; }
-#projects :is(h3,p), #work-experience :is(h3,p,li), #contact a { overflow-wrap:anywhere; }
-#contact a { max-width:100%; }
+
+
+
+
 .rotating-hero .restored-hero-header { display:grid; grid-template-columns:minmax(0,43fr) minmax(0,57fr); gap:32px; align-items:start; min-height:0; padding-top:28px; padding-bottom:12px; }
 .rotating-hero .restored-hero-header .hero-intro { position:relative; top:auto; left:auto; max-width:100%; width:100%; }
 .rotating-hero .restored-hero-header .hero-navigation { position:relative; top:auto; right:auto; width:100%; max-width:100%; }
@@ -295,6 +295,6 @@ a {
  .rotating-hero .hero-navigation nav { gap:12px 16px; }
  .rotating-hero .hero-intro p { font-size:13px; line-height:1.4; }
  .rotating-hero .fan-footer { left:16px; right:16px; }
- .pdf-carousel > div:first-child { flex-wrap:wrap; }
- #contact h2 { font-size:clamp(3rem,14vw,4.5rem); }
+
+
 }
