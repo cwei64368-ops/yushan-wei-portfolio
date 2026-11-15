@@ -471,7 +471,7 @@ const projects = [
     category: "Digital Media Art",
     categoryZh: "数字媒体艺术",
     cover: "/assets/cover_dating.webp",
-    bubbleCover: "/assets/cover_dating.webp",
+    bubbleCover: "/assets/cube-hero.png",
     pdfHref: "#",
     description:
       "A digital media artwork created with Blender and Premiere Pro, visualising the rapid, layered brainstorm of an ADHD mind as ideas collide, multiply, and reorganise within a shifting cube.",
@@ -490,7 +490,7 @@ const projects = [
     category: "Photography",
     categoryZh: "摄影",
     cover: "/assets/photography-vogue.png",
-    bubbleCover: "/assets/photography-vogue.png",
+    bubbleCover: "/assets/black-dress-hero.png",
     pdfHref: "#",
     description:
       "Photography is an ongoing part of my creative practice, sharpening how I observe composition, light, architecture, and human presence. This black-and-white image was selected for PhotoVogue, Vogue Italia's curated photography platform.",
@@ -977,68 +977,93 @@ const heroCompactLayouts = [
 
 function HeroSection() {
   const { language, setLanguage } = useLanguage();
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
-
-  const layoutRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const layout = layoutRef.current;
-    if (!layout) return;
-    let frame = 0;
-    const measure = (element: HTMLElement) => {
-      let left = 0, top = 0;
-      let current: HTMLElement | null = element;
-      while (current && current !== layout) {
-        left += current.offsetLeft;
-        top += current.offsetTop;
-        current = current.offsetParent as HTMLElement | null;
+  const fanRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const angleRef = useRef(0);
+  const rotationXRef = useRef(0);
+  const mouseViewRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+  const pointerRef = useRef<{x:number;y:number}|null>(null);
+  const scaleRef = useRef(1);
+  const panRef = useRef(0);
+  const fitRef = useRef(1);
+  const dragRef = useRef<{start:number;startY:number;last:number;lastY:number;moved:boolean}|null>(null);
+  const suppressClickRef = useRef(false);
+  const pressOriginRef = useRef<{x:number;y:number}|null>(null);
+  const reduced = useRef(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const pausedRef = useRef(false);
+  const [active,setActive] = useState<number|null>(null);
+  const [selected,setSelected] = useState<number|null>(null);
+  const selectedRef=useRef<number|null>(null);
+  const [shelf,setShelf] = useState(reduced.current);
+  const shelfRef=useRef(reduced.current);
+  const idleRef=useRef(false);
+  const springsRef=useRef(projects.map(()=>({y:0,v:0})));
+  useEffect(()=>{
+    const stage=stageRef.current,fan=fanRef.current;if(!stage||!fan)return;
+    const cards=Array.from(fan.querySelectorAll<HTMLElement>(".fan-panel"));
+    const header=stage.parentElement?.querySelector<HTMLElement>(".restored-hero-header");
+    const resize=()=>{
+      if(header){
+        const stageTop=header.offsetHeight+20;
+        stage.style.top=stageTop+"px";
+        (stage.parentElement as HTMLElement).style.minHeight=Math.max(window.innerHeight,stageTop+350+100)+"px";
       }
-      return { element, left, top, width: element.offsetWidth, height: element.offsetHeight };
+      fitRef.current=Math.min(1,Math.max(stage.clientWidth<768?0.65:0.2,(stage.clientWidth-24)/1120),Math.max(0.2,stage.clientHeight/460));
     };
-    const clearOverlaps = () => {
-      const cards = Array.from(layout.querySelectorAll<HTMLElement>("[data-hero-project]"));
-      const intro = layout.querySelector<HTMLElement>(".hero-intro");
-      const navigation = layout.querySelector<HTMLElement>(".hero-navigation");
-      if (!intro || !navigation) return;
-      const elements = [intro, navigation, ...cards];
-      elements.forEach(element => element.style.removeProperty("translate"));
-      const placed: ReturnType<typeof measure>[] = [];
-      const ordered = [measure(intro), measure(navigation), ...cards.map(measure).sort((a, b) => a.top - b.top)];
-      ordered.forEach(rect => {
-        const originalTop = rect.top;
-        let moved = true;
-        while (moved) {
-          moved = false;
-          for (const previous of placed) {
-            // Include captions and leave clearance for the existing hover enlargement.
-            const gap = 24;
-            if (rect.left < previous.left + previous.width + gap &&
-                rect.left + rect.width + gap > previous.left &&
-                rect.top < previous.top + previous.height + gap &&
-                rect.top + rect.height + gap > previous.top) {
-              rect.top = previous.top + previous.height + gap;
-              moved = true;
-            }
-          }
-        }
-        if (rect.top > originalTop) rect.element.style.translate = "0 " + (rect.top - originalTop) + "px";
-        placed.push(rect);
+    const observer=new ResizeObserver(resize);observer.observe(stage);if(header)observer.observe(header);resize();
+    const timer=window.setTimeout(()=>{shelfRef.current=true;setShelf(true);},reduced.current?0:2800);
+    let frame=0,last=performance.now(),spin=-22,phase=reduced.current?1:0;
+    let lastActivity=performance.now(),idle=false;
+    let lastMouseX=-1,lastMouseY=-1,lastScroll=window.scrollY;
+    const resume=(event:Event)=>{
+      if(event.type==="pointermove"){const pointer=event as PointerEvent;if(Math.abs(pointer.clientX-lastMouseX)<2&&Math.abs(pointer.clientY-lastMouseY)<2)return;lastMouseX=pointer.clientX;lastMouseY=pointer.clientY;}
+      if(event.type==="scroll"){if(window.scrollY===lastScroll)return;lastScroll=window.scrollY;}
+      lastActivity=performance.now();
+      if(idle){idle=false;idleRef.current=false;shelfRef.current=true;setShelf(true);}
+    };
+    const activityEvents=["pointermove","pointerdown","pointerup","wheel","keydown","scroll"] as const;
+    activityEvents.forEach(name=>window.addEventListener(name,resume,{passive:true}));
+    const draw=(now:number)=>{
+      const dt=Math.min((now-last)/1000,.05);last=now;
+      const hero=stage.closest("section");
+      const bounds=hero?.getBoundingClientRect();
+      const heroVisible=bounds&&bounds.top<window.innerHeight*.5&&bounds.bottom>window.innerHeight*.5;
+      if(!idle&&now-lastActivity>=10000&&heroVisible&&!document.hidden&&!dragRef.current){
+        idle=true;idleRef.current=true;shelfRef.current=false;setShelf(false);
+        selectedRef.current=null;setSelected(null);setActive(null);
+        pointerRef.current=null;mouseViewRef.current.targetX=0;mouseViewRef.current.targetY=0;
+        angleRef.current=0;rotationXRef.current=0;scaleRef.current=1;panRef.current=0;
+      }
+      if(!pausedRef.current&&!document.hidden){
+        if(!shelfRef.current&&!dragRef.current&&!reduced.current)spin+=dt*9;
+        phase+=(Number(shelfRef.current)-phase)*(1-Math.exp(-dt*2));
+      }
+      const view=mouseViewRef.current;
+      const ease=1-Math.exp(-dt*6);
+      view.x+=(view.targetX-view.x)*ease;view.y+=(view.targetY-view.y)*ease;
+      const yaw=(spin+angleRef.current+view.y)*(1-phase);
+      fan.style.setProperty("--fan-yaw",yaw+"deg");
+      fan.style.setProperty("--fan-pitch",((-15+rotationXRef.current+view.x)*(1-phase))+"deg");
+      const openingFit=Math.min(1,(stage.clientWidth-24)/700);
+      const displayFit=openingFit*(1-phase)+fitRef.current*phase;
+      fan.style.transform="translateX("+(panRef.current*displayFit*phase)+"px) scale("+displayFit*scaleRef.current+") rotateX("+(-15+phase*3+rotationXRef.current+view.x)+"deg) rotateY("+yaw+"deg) rotateZ(0deg)";
+      cards.forEach((card,index)=>{
+        const spring=springsRef.current[index];
+        let target=0;
+        for(let step=0;step<4;step++){const t=dt/4;spring.v+=((target-spring.y)*70-spring.v*12.5)*t;spring.y+=spring.v*t;}
+        card.style.translate="0 "+(selectedRef.current===index ? -25 : -spring.y)+"px";
       });
-      // Extra space belongs to the section, so percentage-based original positions stay stable.
-      const overflow = Math.max(0, ...placed.map(rect => rect.top + rect.height - layout.offsetHeight));
-      (layout.parentElement as HTMLElement).style.paddingBottom = 40 + overflow + "px";
+      frame=requestAnimationFrame(draw);
     };
-    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(clearOverlaps); };
-    const observer = new ResizeObserver(schedule);
-    observer.observe(layout);
-    layout.querySelectorAll<HTMLElement>("[data-hero-project], .hero-intro, .hero-navigation").forEach(element => observer.observe(element));
-    schedule();
-    document.fonts.ready.then(schedule);
-    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
-  }, []);
-
+    const wheel=(event:WheelEvent)=>{event.preventDefault();scaleRef.current=Math.max(.7,Math.min(1.6,scaleRef.current-event.deltaY*.001));};
+    stage.addEventListener("wheel",wheel,{passive:false});frame=requestAnimationFrame(draw);
+    return()=>{cancelAnimationFrame(frame);clearTimeout(timer);observer.disconnect();stage.removeEventListener("wheel",wheel);activityEvents.forEach(name=>window.removeEventListener(name,resume));};
+  },[]);
+  const focusProject=(index:number)=>{if(idleRef.current)return;selectedRef.current=index;shelfRef.current=true;setShelf(true);setSelected(index);setActive(index);};
+  const releaseProject=()=>{selectedRef.current=null;setSelected(null);setActive(null);};
   return (
-    <section className="hero-section relative min-h-screen overflow-hidden bg-white px-4 pb-10 text-black sm:px-6 md:px-8">
-      <div ref={layoutRef} className="hero-layout relative mx-auto min-h-[100svh] max-w-[1800px] pt-5 sm:pt-7">
+    <section className="rotating-hero" aria-label={localize(language, "Selected projects", "精选作品")}>
+      <div className="restored-hero-header">
         <FadeIn delay={0.04} x={-24} y={0} className="hero-intro relative z-30 max-w-[72%] lg:absolute lg:left-0 lg:top-6 lg:max-w-[43%]">
           <h1 className="text-[clamp(3.4rem,7.8vw,8.6rem)] font-black leading-[0.74] tracking-[-0.075em]">
             Yushan
@@ -1081,67 +1106,53 @@ function HeroSection() {
           </nav>
         </FadeIn>
 
-        <div
-          className="hero-projects relative z-20 mt-20 flex flex-col pb-8 sm:mt-28 lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-0 lg:mt-0 lg:block lg:pb-0"
-          onMouseLeave={() => setHoveredProject(null)}
-        >
-          {projects.slice(0, 6).map((project, index) => {
-            const isActive = hoveredProject === index;
-            const isDeemphasized = hoveredProject !== null && !isActive;
-
-            return (
-              <motion.a
-                key={project.name}
-                href={`#project-${index}`}
-                data-hero-project={index}
-                aria-label={`View ${project.name}`}
-                className={`hero-project group relative block min-w-0 origin-center lg:absolute lg:m-0 lg:self-auto ${heroCompactLayouts[index]} ${heroScatterLayouts[index]}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                animate={{
-                  scale: isActive ? 1.055 : 1,
-                  filter: isDeemphasized ? "blur(5px)" : "blur(0px)",
-                  opacity: isDeemphasized ? 0.3 : 1,
-                }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                onMouseEnter={() => setHoveredProject(index)}
-                onMouseLeave={() => setHoveredProject(null)}
-                onFocus={() => setHoveredProject(index)}
-                onBlur={() => setHoveredProject(null)}
-              >
-                {index === 5 && (
-                  <div className="mb-2 flex items-baseline justify-between gap-2">
-                    <span className="text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs">
-                      {language === "zh" ? project.categoryZh : heroProjectTypes[index]}
-                    </span>
-                    <span className="text-[0.6rem] font-medium tabular-nums opacity-45 sm:text-[0.7rem]">
-                      0{index + 1}
-                    </span>
-                  </div>
-                )}
-                <div className="aspect-square overflow-hidden border border-black/20 bg-white">
-                  <img
-                    src={project.bubbleCover}
-                    alt={project.name}
-                    className={`h-full w-full transition duration-500 group-hover:scale-[1.035] ${project.name === "ai photo body" ? "object-contain bg-[#ff2040]" : "object-cover"}`}
-                  />
-                </div>
-                {index !== 5 && (
-                  <div className="mt-2 flex items-baseline justify-between gap-2">
-                    <span className="text-[0.65rem] font-semibold uppercase tracking-[0.13em] sm:text-xs">
-                      {language === "zh" ? project.categoryZh : heroProjectTypes[index]}
-                    </span>
-                    <span className="text-[0.6rem] font-medium tabular-nums opacity-45 sm:text-[0.7rem]">
-                      0{index + 1}
-                    </span>
-                  </div>
-                )}
-              </motion.a>
-            );
-          })}
+      </div>
+      <div className={"fan-stage " + (shelf ? "is-shelf" : "is-opening")} ref={stageRef}
+        onDragStart={e=>{e.preventDefault();suppressClickRef.current=true;}}
+        onPointerDown={e=>{
+          if(e.button!==0)return;
+          pressOriginRef.current={x:e.clientX,y:e.clientY};
+          e.preventDefault();
+          suppressClickRef.current=false;
+          dragRef.current={start:e.clientX,startY:e.clientY,last:e.clientX,lastY:e.clientY,moved:false};
+        }}
+        onPointerMove={e=>{
+          pointerRef.current={x:e.clientX,y:e.clientY};
+          const drag=dragRef.current;
+          if(!drag){const r=e.currentTarget.getBoundingClientRect();mouseViewRef.current.targetY=((e.clientX-r.left)/r.width-.5)*8;mouseViewRef.current.targetX=-((e.clientY-r.top)/r.height-.5)*5;return;}
+          const dx=e.clientX-drag.last,dy=e.clientY-drag.last;drag.last=e.clientX;drag.lastY=e.clientY;
+          if(Math.hypot(e.clientX-drag.start,e.clientY-drag.startY)>6){drag.moved=true;suppressClickRef.current=true;e.currentTarget.setPointerCapture(e.pointerId);}
+          if(drag.moved){selectedRef.current=null;setSelected(null);if(e.currentTarget.clientWidth<768&&shelfRef.current){panRef.current=Math.max(-480,Math.min(480,panRef.current+dx/Math.max(.2,fitRef.current)));return;}angleRef.current=Math.max(-25,Math.min(25,angleRef.current+dx*.15));rotationXRef.current=Math.max(-15,Math.min(15,rotationXRef.current-dy*.15));}
+        }}
+        onPointerUp={()=>{dragRef.current=null;}}
+        onPointerCancel={()=>{dragRef.current=null;}}
+        onLostPointerCapture={()=>{dragRef.current=null;}}
+        onPointerLeave={()=>{pointerRef.current=null;mouseViewRef.current.targetX=0;mouseViewRef.current.targetY=0;if(!dragRef.current?.moved)dragRef.current=null;}}
+        onClickCapture={e=>{const origin=pressOriginRef.current;const moved=origin&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>6;if(suppressClickRef.current||moved){e.preventDefault();e.stopPropagation();}suppressClickRef.current=false;pressOriginRef.current=null;}}>
+        <div className="fan-rotor" ref={fanRef}>
+          {projects.map((project,index)=>(
+            <a key={project.name} className={"fan-panel" + (selected===index ? " is-selected" : "")} href={"#project-"+index}
+              style={{zIndex:selected===index?20:undefined,transform: shelf
+                ? "translate3d(" + ((index-4)*90-130+(selected===null?0:index>selected?110:index<selected?-110:0)) + "px," + 0 + "px," + 0 + "px) rotateY(" + (selected===index ? 0 : -60) + "deg)"
+                : "rotateY(" + index*360/projects.length + "deg) translateX(10px) translateZ(" + index + "px)"}}
+              onClick={e=>{if(window.matchMedia("(hover: none)").matches&&selected!==index){e.preventDefault();focusProject(index);}}}
+              aria-label={localize(language,"View ","查看 ")+project.name}
+              onMouseEnter={()=>focusProject(index)} onMouseLeave={releaseProject}
+              onFocus={()=>focusProject(index)} onBlur={releaseProject}
+              draggable={false}>
+              <img src={project.bubbleCover} alt={project.name} draggable={false} />
+              <div className="fan-panel-caption"><span>{project.number}</span><span>{project.name}</span><ArrowUpRight size={16}/></div>
+            </a>
+          ))}
         </div>
       </div>
+      <footer className="fan-footer">
+        <div className="fan-project-info" aria-live="polite">
+          <span>{active===null ? "01 — 09" : projects[active].number}</span>
+          <p>{active===null ? localize(language,"SELECTED WORKS", "精选作品") : projects[active].name}</p>
+          <small>{active===null ? localize(language,"Hover to face forward · Click to explore", "鼠标移到封面即翻正 · 点击查看项目") : (language==="zh"?projects[active].categoryZh:projects[active].category)}</small>
+        </div>
+      </footer>
     </section>
   );
 }
@@ -1793,7 +1804,7 @@ function ContactSection() {
       <img
         src="/assets/contact-yushan.jpg"
         alt="Portrait of Yushan Wei"
-        className="absolute left-[46%] top-[26%] hidden h-[74%] w-[36%] object-cover object-top md:block"
+        className="hidden"
       />
 
       <FadeIn className="relative z-10 flex min-h-screen w-full flex-col px-5 py-10 sm:px-8 sm:py-14 md:px-10">
@@ -1834,7 +1845,7 @@ function ContactSection() {
         <img
           src="/assets/contact-yushan.jpg"
           alt="Portrait of Yushan Wei"
-          className="mx-auto mt-12 aspect-[3/4] w-[82%] object-cover object-top sm:w-[68%] md:hidden"
+          className="mx-auto mt-12 aspect-[3/4] w-[82%] max-w-[680px] object-cover object-top sm:w-[68%] md:ml-[40%] md:w-[42%]"
         />
 
         <p className="mt-auto pt-16 text-left text-xs font-semibold uppercase tracking-[0.18em] sm:text-sm">

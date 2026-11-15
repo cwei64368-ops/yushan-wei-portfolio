@@ -169,3 +169,132 @@ a {
     letter-spacing: 0.1em;
   }
 }
+
+/* Center-hinged project pages, inspired by the reference's rotating 3D fan. */
+.main-wrapper .rotating-hero { position: relative; min-height: 760px; height: 100svh; overflow: hidden; background: #080808 !important; color: #fff !important; padding: 32px 40px; }
+.main-wrapper .rotating-hero :is(a,p,span,small,button,label,select) { color: #f6f5f1 !important; }
+.fan-header { position: relative; z-index: 5; display: flex; justify-content: space-between; gap: 32px; align-items: start; }
+.fan-name { font-size: clamp(22px,2.4vw,36px); line-height: 0.95; font-weight: 700; letter-spacing: -.045em; text-decoration: none; }
+.fan-name span { font-size: .68em; letter-spacing: -.015em; }
+.fan-nav { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 16px 28px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.fan-nav a:hover { opacity: .55; }
+.fan-nav select { background: #080808; border: 1px solid #555; border-radius: 0; padding: 5px; font-size: 11px; }
+.fan-intro { position: absolute; top: 150px; left: 40px; z-index: 3; font-size: 10px; line-height: 1.8; letter-spacing: .1em; }
+.fan-intro a { display: inline-block; margin-top: 28px; letter-spacing: 0; font-size: 12px; }
+.fan-stage { --panel-width: 320px; position: absolute; inset: 180px 0 160px; perspective: 2000px; touch-action: none; cursor: grab; }
+.fan-stage:active { cursor: grabbing; }
+.fan-rotor { position: absolute; top: 50%; left: 50%; width: 0; height: 0; transform-style: preserve-3d; will-change: transform; }
+.fan-panel { position: absolute; top: calc(var(--panel-width) * -.375); left: 0; width: var(--panel-width); height: calc(var(--panel-width) * .75); transform-origin: left center; transform-style: preserve-3d; display: block; background: #eee; border: 0; backface-visibility: visible; box-shadow: 0 10px 30px #000c; transition: box-shadow .3s, filter .3s, transform 3s cubic-bezier(.25,1,.5,1); }
+.fan-panel img { width: 100%; height: 100%; object-fit: cover; user-select: none; pointer-events: none; }
+.fan-panel-caption { position: absolute; inset: auto 0 0; display: flex; align-items: center; gap: 8px; padding: 12px; background: linear-gradient(transparent,#000d); font-size: 10px; line-height: 1.25; padding-top: 32px; }
+.fan-panel-caption span:nth-child(2) { flex: 1; }
+.fan-panel:focus-visible { outline: 3px solid white; outline-offset: 5px; }
+.fan-footer { position: absolute; z-index: 5; bottom: 32px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+.fan-project-info { min-width: 0; width: 280px; }
+.fan-project-info > span { font-size: 10px; opacity: .45; letter-spacing: .2em; }
+.fan-project-info p { font-size: 18px; margin: 6px 0; line-height: 1.2; }
+.fan-project-info small { font-size: 11px; opacity: .6; }
+.fan-controls { display: flex; gap: 8px; align-items: center; }
+.fan-controls button { border: 1px solid #666; padding: 10px 15px; font-size: 11px; background: transparent; cursor: pointer; }
+.fan-controls button:hover { background: #ffffff22; }
+.fan-all-projects { font-size: 11px; letter-spacing: .12em; }
+@media (max-width: 767px) {
+  .main-wrapper .rotating-hero { min-height: 720px; padding: 24px 20px; }
+  .fan-header { flex-direction: column; gap: 24px; }
+  .fan-nav { justify-content: flex-start; gap: 12px 18px; font-size: 10px; }
+  .fan-intro { top: 160px; left: 20px; font-size: 9px; }
+  .fan-intro a { margin-top: 8px; }
+  .fan-stage { --panel-width: 200px; inset: 260px 0 180px; perspective: 2000px; }
+  .fan-rotor { left: 50%; }
+  .fan-footer { left: 20px; right: 20px; bottom: 24px; flex-wrap: wrap; gap: 18px; }
+  .fan-project-info { width: 100%; }
+  .fan-project-info p { font-size: 16px; }
+  .fan-all-projects { margin-left: auto; font-size: 9px; }
+}
+
+.fan-panel:hover { filter: brightness(1.2); box-shadow: 0 10px 40px #ffffff33; }
+.fan-panel-caption { display: none; }
+@media (prefers-reduced-motion: reduce) { .fan-panel { transition: none; } }
+
+/* Opening fan settles into a readable diagonal row of project volumes. */
+.main-wrapper .rotating-hero .shelf-wordmark { position:absolute; top:18%; left:0; width:100%; text-align:center; font-family:Georgia,serif !important; font-weight:400; font-size:clamp(100px,23vw,330px); line-height:1; letter-spacing:-.065em; color:#f3eee5; pointer-events:none; z-index:0; }
+.fan-stage { inset:220px 0 135px; user-select:none; -webkit-user-select:none; }
+.fan-stage *, .fan-stage img { user-select:none; -webkit-user-select:none; -webkit-user-drag:none; }
+.fan-rotor { left:50%; top:57%; }
+.fan-panel { transition:width 2.6s cubic-bezier(.2,.8,.2,1),height 2.6s cubic-bezier(.2,.8,.2,1),top 2.6s cubic-bezier(.2,.8,.2,1),transform 2.6s cubic-bezier(.2,.8,.2,1),filter .3s; }
+.is-shelf .fan-panel { width:180px; height:250px; top:-125px; transform-origin:center center; box-shadow:10px 18px 28px #0008; }
+.is-shelf .fan-panel::after { content:none; }
+.is-shelf .fan-panel img { object-fit:cover; }
+.is-shelf .fan-panel-caption { display:flex; font-size:10px; padding:26px 8px 10px; }
+.is-shelf .fan-panel:hover { filter:brightness(1.07); }
+@media(max-width:767px) {
+ .main-wrapper .rotating-hero .shelf-wordmark { top:27%; font-size:25vw; }
+ .fan-stage { inset:260px 0 175px; }
+ .fan-rotor { top:55%; }
+}
+
+/* Retain the original white editorial identity above the animated flat prints. */
+.main-wrapper .rotating-hero { background:#fff !important; color:#000 !important; padding:0 32px; }
+.main-wrapper .rotating-hero :is(a,p,span,small,button,label,select) { color:#000 !important; }
+.restored-hero-header { position:relative; z-index:5; max-width:1800px; margin:0 auto; min-height:290px; padding-top:28px; }
+.restored-hero-header .hero-intro { top:24px; }
+.rotating-hero .fan-stage { top:300px; }
+.rotating-hero .fan-panel, .rotating-hero .is-shelf .fan-panel, .rotating-hero .fan-panel:hover { box-shadow:none; border:0; }
+.main-wrapper .rotating-hero .fan-panel-caption span { color:#fff !important; }
+.rotating-hero .fan-controls button { border-color:#bbb; }
+.rotating-hero .fan-controls button:hover { background:#00000008; }
+@media(max-width:1023px) {
+ .restored-hero-header { padding-top:24px; }
+ .restored-hero-header .hero-intro { top:auto; }
+}
+@media(max-width:767px) {
+ .main-wrapper .rotating-hero { padding:0 20px; }
+ .restored-hero-header { padding-top:24px; min-height:260px; }
+ .rotating-hero .fan-stage { top:280px; }
+ .restored-hero-header h1 { font-size:clamp(2.5rem,7.8vw,8.6rem); }
+}
+
+/* Center the horizontal project row higher in the hero. */
+.rotating-hero .fan-stage { top:260px; bottom:160px; }
+.rotating-hero .fan-rotor { top:42%; }
+@media(max-width:767px) { .rotating-hero .fan-stage { top:250px; bottom:160px; } .rotating-hero .fan-rotor { top:45%; } }
+
+/* Position the row around the visual center, leaving the original header clear. */
+.rotating-hero .fan-rotor { top:57%; }
+.fan-panel.is-selected { filter:brightness(1.04); }
+@media(max-width:767px) { .rotating-hero .fan-rotor { top:55%; } }
+
+/* Parallel upright panels: only the chosen image opens towards the viewer. */
+.rotating-hero .is-shelf .fan-panel { width:260px; height:290px; top:-145px; transform-origin:center center; }
+.rotating-hero .fan-rotor { top:55%; }
+
+/* Responsive sizing shared by both languages and all screen aspect ratios. */
+.main-wrapper section { min-width:0; }
+.main-wrapper :is(article,figure,[class*="grid"] > *) { min-width:0; }
+#projects :is(h3,p), #work-experience :is(h3,p,li), #contact a { overflow-wrap:anywhere; }
+#contact a { max-width:100%; }
+.rotating-hero .restored-hero-header { display:grid; grid-template-columns:minmax(0,43fr) minmax(0,57fr); gap:32px; align-items:start; min-height:0; padding-top:28px; padding-bottom:12px; }
+.rotating-hero .restored-hero-header .hero-intro { position:relative; top:auto; left:auto; max-width:100%; width:100%; }
+.rotating-hero .restored-hero-header .hero-navigation { position:relative; top:auto; right:auto; width:100%; max-width:100%; }
+.rotating-hero .hero-navigation nav { flex-direction:row; flex-wrap:wrap; justify-content:flex-end; gap:16px clamp(12px,2vw,40px); }
+.rotating-hero .hero-intro h1 { font-size:clamp(2.5rem,7.8vw,8.6rem); }
+.rotating-hero .hero-intro p { margin-top:24px; }
+.rotating-hero .fan-stage { bottom:100px; touch-action:pan-y pinch-zoom; }
+.rotating-hero .fan-rotor { top:50%; }
+.rotating-hero .fan-footer { bottom:24px; }
+@media(max-width:1023px) {
+ .rotating-hero .restored-hero-header { grid-template-columns:minmax(0,1fr); gap:24px; padding-top:24px; }
+ .rotating-hero .hero-navigation { grid-row:1; }
+ .rotating-hero .hero-navigation nav { justify-content:flex-end; font-size:clamp(10px,1.5vw,14px); }
+ .rotating-hero .hero-intro { grid-row:2; }
+ .rotating-hero .hero-intro h1 { font-size:clamp(2.5rem,10vw,6rem); }
+ .rotating-hero .hero-intro p { max-width:38ch; }
+}
+@media(max-width:479px) {
+ .main-wrapper .rotating-hero { padding:0 16px; }
+ .rotating-hero .hero-navigation nav { gap:12px 16px; }
+ .rotating-hero .hero-intro p { font-size:13px; line-height:1.4; }
+ .rotating-hero .fan-footer { left:16px; right:16px; }
+ .pdf-carousel > div:first-child { flex-wrap:wrap; }
+ #contact h2 { font-size:clamp(3rem,14vw,4.5rem); }
+}
