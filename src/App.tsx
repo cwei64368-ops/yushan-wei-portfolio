@@ -1008,7 +1008,12 @@ function HeroSection() {
         stage.style.top=stageTop+"px";
         (stage.parentElement as HTMLElement).style.minHeight=Math.max(window.innerHeight,stageTop+350+100)+"px";
       }
-      fitRef.current=Math.min(1,Math.max(stage.clientWidth<768?0.65:0.2,(stage.clientWidth-24)/1120),Math.max(0.2,stage.clientHeight/460));
+      const step=90*Math.max(1,Math.min(1.85,stage.clientWidth/1280));
+      fan.style.setProperty("--fan-step",step+"px");
+      const rowWidth=(projects.length-1)*step+360;
+      fitRef.current=stage.clientWidth<768
+        ? Math.min(.8,Math.max(.65,(stage.clientWidth-24)/1120),Math.max(.2,stage.clientHeight/460))
+        : Math.min(2.4,(stage.clientWidth-48)/rowWidth,Math.max(.2,stage.clientHeight/360));
     };
     const observer=new ResizeObserver(resize);observer.observe(stage);if(header)observer.observe(header);resize();
     const timer=window.setTimeout(()=>{shelfRef.current=true;setShelf(true);},reduced.current?0:2800);
@@ -1028,15 +1033,15 @@ function HeroSection() {
       const hero=stage.closest("section");
       const bounds=hero?.getBoundingClientRect();
       const heroVisible=bounds&&bounds.top<window.innerHeight*.5&&bounds.bottom>window.innerHeight*.5;
-      if(!idle&&now-lastActivity>=10000&&heroVisible&&!document.hidden&&!dragRef.current){
-        idle=true;idleRef.current=true;shelfRef.current=false;setShelf(false);
+      if(!idle&&now-lastActivity>=5000&&heroVisible&&!document.hidden&&!dragRef.current){
+        idle=true;idleRef.current=true;spin=-22;shelfRef.current=false;setShelf(false);
         selectedRef.current=null;setSelected(null);setActive(null);
         pointerRef.current=null;mouseViewRef.current.targetX=0;mouseViewRef.current.targetY=0;
         angleRef.current=0;rotationXRef.current=0;scaleRef.current=1;panRef.current=0;
       }
       if(!pausedRef.current&&!document.hidden){
-        if(!shelfRef.current&&!dragRef.current&&!reduced.current)spin+=dt*9;
-        phase+=(Number(shelfRef.current)-phase)*(1-Math.exp(-dt*2));
+        if(!shelfRef.current&&!dragRef.current&&!reduced.current)spin+=dt*(idle?4:9);
+        phase+=(Number(shelfRef.current)-phase)*(1-Math.exp(-dt*(idle?1:2)));
       }
       const view=mouseViewRef.current;
       const ease=1-Math.exp(-dt*6);
@@ -1044,7 +1049,7 @@ function HeroSection() {
       const yaw=(spin+angleRef.current+view.y)*(1-phase);
       fan.style.setProperty("--fan-yaw",yaw+"deg");
       fan.style.setProperty("--fan-pitch",((-15+rotationXRef.current+view.x)*(1-phase))+"deg");
-      const openingFit=Math.min(1,(stage.clientWidth-24)/700);
+      const openingFit=Math.min(1.95,(stage.clientWidth-32)/720,Math.max(.25,stage.clientHeight/350));
       const displayFit=openingFit*(1-phase)+fitRef.current*phase;
       fan.style.transform="translateX("+(panRef.current*displayFit*phase)+"px) scale("+displayFit*scaleRef.current+") rotateX("+(-15+phase*3+rotationXRef.current+view.x)+"deg) rotateY("+yaw+"deg) rotateZ(0deg)";
       cards.forEach((card,index)=>{
@@ -1133,7 +1138,7 @@ function HeroSection() {
           {projects.map((project,index)=>(
             <a key={project.name} className={"fan-panel" + (selected===index ? " is-selected" : "")} href={"#project-"+index}
               style={{zIndex:selected===index?20:undefined,transform: shelf
-                ? "translate3d(" + ((index-4)*90-130+(selected===null?0:index>selected?110:index<selected?-110:0)) + "px," + 0 + "px," + 0 + "px) rotateY(" + (selected===index ? 0 : -60) + "deg)"
+                ? "translate3d(calc(" + (index-4) + " * var(--fan-step, 90px) - 130px + " + (selected===null?0:index>selected?110:index<selected?-110:0) + "px),0px,0px) rotateY(" + (selected===index ? 0 : -60) + "deg)"
                 : "rotateY(" + index*360/projects.length + "deg) translateX(10px) translateZ(" + index + "px)"}}
               onClick={e=>{if(window.matchMedia("(hover: none)").matches&&selected!==index){e.preventDefault();focusProject(index);}}}
               aria-label={localize(language,"View ","查看 ")+project.name}
