@@ -1060,9 +1060,9 @@ function HeroSection() {
       });
       frame=requestAnimationFrame(draw);
     };
-    const wheel=(event:WheelEvent)=>{event.preventDefault();scaleRef.current=Math.max(.7,Math.min(1.6,scaleRef.current-event.deltaY*.001));};
-    stage.addEventListener("wheel",wheel,{passive:false});frame=requestAnimationFrame(draw);
-    return()=>{cancelAnimationFrame(frame);clearTimeout(timer);observer.disconnect();stage.removeEventListener("wheel",wheel);activityEvents.forEach(name=>window.removeEventListener(name,resume));};
+
+    frame=requestAnimationFrame(draw);
+    return()=>{cancelAnimationFrame(frame);clearTimeout(timer);observer.disconnect();activityEvents.forEach(name=>window.removeEventListener(name,resume));};
   },[]);
   const focusProject=(index:number)=>{if(idleRef.current)return;selectedRef.current=index;shelfRef.current=true;setShelf(true);setSelected(index);setActive(index);};
   const releaseProject=()=>{selectedRef.current=null;setSelected(null);setActive(null);};
